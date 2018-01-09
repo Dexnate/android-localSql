@@ -37,10 +37,16 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         //Reference au widget ListView sur le layout
          contactListView = findViewById(R.id.contactListView);
 
-         //Recuperation de la liste des contacts
-         contactList = this.getAllContacts();
+         contactListInit();
 
-         //Création d'un contactArrayAdapter
+
+    }
+
+    private void contactListInit() {
+        //Recuperation de la liste des contacts
+        contactList = this.getAllContacts();
+
+        //Création d'un contactArrayAdapter
         ContactArrayAdapter contactAdapter = new ContactArrayAdapter(this, contactList);
 
         //Definition de l'adapter de notre listView
@@ -48,11 +54,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         //definition d'un écouteur d'évenement pour onItemclick
         contactListView.setOnItemClickListener(this);
-
-
-
-
-
     }
 
     /**
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         DatabaseHandler db = new DatabaseHandler(this);
 
         //Execution de la requête de selection
-        Cursor cursor = db.getReadableDatabase().rawQuery("SELECT name, first_name, email FROM contacts", null);
+        Cursor cursor = db.getReadableDatabase().rawQuery("SELECT name, first_name, email, id FROM contacts", null);
 
         //Instanciation de la liste qui recevra les données
         List<Map<String, String>> contactList=new ArrayList<>();
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             contactCols.put("name", cursor.getString(0));
             contactCols.put("firstName", cursor.getString(1));
             contactCols.put("email", cursor.getString(2));
+            contactCols.put("id", cursor.getString(3));
 
             //Ajout du map à la list
             contactList.add(contactCols);
@@ -115,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.mainMenuOptionDelete:
-
+                this.deleteSelectedContact();
                 break;
             case R.id.mainmenuOptionEdit:
 
@@ -124,6 +126,30 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
         return true;
+    }
+
+    //Methode de suppression de contact selectionné
+    private void deleteSelectedContact(){
+        //Suppression uniquement si un contact est sélectionné
+        if (this.selectedIndex != null){
+            try{
+                //Définition de la requête sql et des paramètres
+                String sql="DELETE FROM contacts WHERE id=?";
+                String [] params = {this.selectedPerson.get("id")};
+                //Execution de la requête
+                DatabaseHandler db = new DatabaseHandler(this);
+                db.getWritableDatabase().execSQL(sql, params);
+
+                //réinitiamisation de la liste des contacts
+                this.contactList = this.getAllContacts();
+                contactListInit();
+            }catch (SQLiteException ex){
+                Toast.makeText(this,"Impossible de supprimer", Toast.LENGTH_SHORT).show();
+            }
+
+        }else{
+            Toast.makeText(this,"Veuillez selectionner un contact", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
