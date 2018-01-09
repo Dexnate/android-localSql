@@ -17,6 +17,7 @@ public class FormActivity extends AppCompatActivity {
     private EditText editTextNom;
     private EditText editTextPrenom;
     private EditText editTextEmail;
+    private String contactId;
 
 
 
@@ -24,18 +25,35 @@ public class FormActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.form);
+       contactId = getIntent().getStringExtra("id");
+       if (contactId != null){
+            //Si un contact et créé et que nous sommes dans une modification
+           editTextNom = (EditText) findViewById(R.id.editTextNom);
+           editTextPrenom = (EditText) findViewById(R.id.editTextPrenom);
+           editTextEmail = (EditText) findViewById(R.id.editTextEmail);
 
-        editTextNom = (EditText) findViewById(R.id.editTextNom);
-        editTextPrenom = (EditText) findViewById(R.id.editTextPrenom);
-        editTextEmail = (EditText) findViewById(R.id.editTextEmail);
+           //Recuperation des données put extra
+           editTextNom.setText(getIntent().getStringExtra("name"));
+           editTextPrenom.setText(getIntent().getStringExtra("firstName"));
+           editTextEmail.setText(getIntent().getStringExtra("email"));
+
+       }else {
+           //Si clic sur nouveau contact, aucun contact selectionné
+           editTextNom = (EditText) findViewById(R.id.editTextNom);
+           editTextPrenom = (EditText) findViewById(R.id.editTextPrenom);
+           editTextEmail = (EditText) findViewById(R.id.editTextEmail);
+
+
 
      /*  Initialisation pour test
         editTextNom.setText("Allen");
        editTextPrenom.setText("Barry");
         editTextEmail.setText("barry.allen@flash.com"); */
 
+
+       }
         ActionBar actionBar = getActionBar();
-        if(actionBar != null){
+        if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
@@ -56,19 +74,34 @@ public class FormActivity extends AppCompatActivity {
         insertValues.put("first_name", firstName);
         insertValues.put("email", email);
 
-        //Insertion des données
-       try {
-           db.getWritableDatabase().insert("contacts", null, insertValues);
-           Toast.makeText(this, "Insertion OK", Toast.LENGTH_SHORT).show();
 
-           editTextNom.setText("");
-           editTextPrenom.setText("");
-           editTextEmail.setText("");
+        if(contactId != null){
+            try {
+                String[] params= {contactId};
+                db.getWritableDatabase().update("contacts", insertValues, "id=?", params);
+                Toast.makeText(this, "Modification OK", Toast.LENGTH_SHORT).show();
+                setResult(RESULT_OK);
+                finish(); //permet de finir la requête intent et de revenir sur le main activity automatiquement
+            }catch (SQLiteException ex) {
+                Log.e("SQL EXCEPTION", ex.getMessage());
+            }
+        }else {
 
-       }catch (SQLiteException ex){
-            Log.e("SQL EXCEPTION", ex.getMessage());
-       }
+            //Insertion des données
+            try {
+                db.getWritableDatabase().insert("contacts", null, insertValues);
+                Toast.makeText(this, "Insertion OK", Toast.LENGTH_SHORT).show();
 
+                editTextNom.setText("");
+                editTextPrenom.setText("");
+                editTextEmail.setText("");
+                setResult(RESULT_OK);
+                finish();
+
+            } catch (SQLiteException ex) {
+                Log.e("SQL EXCEPTION", ex.getMessage());
+            }
+        }
 
     }
 

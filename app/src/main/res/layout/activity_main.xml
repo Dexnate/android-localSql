@@ -8,15 +8,12 @@
     tools:context="mk.fr.localsqlapp.MainActivity">
 
 
-
     <Button
         android:id="@+id/buttonAddContact"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Nouveau contact"
         android:onClick="onAddContact"/>
-
-
 
     <ListView
         android:id= "@+id/contactListView"
@@ -24,6 +21,8 @@
         android:layout_height="wrap_content"
         android:choiceMode="singleChoice"
         android:listSelector="@color/colorSelectedItem"/>
+
+
 
 
 </LinearLayout>

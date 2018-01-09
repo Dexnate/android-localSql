@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     public void onAddContact(View view) {
         Intent formIntent = new Intent(this, FormActivity.class);
-        startActivity(formIntent);
+        startActivityForResult(formIntent,1);
 
     }
 
@@ -120,12 +120,34 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 this.deleteSelectedContact();
                 break;
             case R.id.mainmenuOptionEdit:
+                //Creation d'une intention
+               Intent modifyIntent = new Intent(this, FormActivity.class);
+               if(this.selectedIndex != null){
+                   //Passage des paramètres à l'intention
+                   modifyIntent.putExtra("id",this.selectedPerson.get("id"));
+                   modifyIntent.putExtra("firstName",this.selectedPerson.get("firstName"));
+                   modifyIntent.putExtra("name",this.selectedPerson.get("name"));
+                   modifyIntent.putExtra("email",this.selectedPerson.get("email"));
+
+                   //Lancement de l'activité FormActivity
+                   startActivityForResult(modifyIntent, 1);
+               }
 
                 break;
         }
 
-
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if( resultCode == RESULT_OK){
+            Toast.makeText(this, "Mise à jour effectuée", Toast.LENGTH_SHORT).show();
+
+            //Réinitialisation de l'affichage
+            this.contactListInit();
+        }
+
     }
 
     //Methode de suppression de contact selectionné

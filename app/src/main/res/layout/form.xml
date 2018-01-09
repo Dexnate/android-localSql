@@ -51,6 +51,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Valider"
-        android:background="@color/rose"
+        android:background="@color/colorSelectedItem"
         android:onClick="onValid"/>
 </LinearLayout>
