@@ -29,10 +29,10 @@ public class FormActivity extends AppCompatActivity {
         editTextPrenom = (EditText) findViewById(R.id.editTextPrenom);
         editTextEmail = (EditText) findViewById(R.id.editTextEmail);
 
-        //Initialisation pour test
+     /*  Initialisation pour test
         editTextNom.setText("Allen");
-        editTextPrenom.setText("Barry");
-        editTextEmail.setText("barry.allen@flash.com");
+       editTextPrenom.setText("Barry");
+        editTextEmail.setText("barry.allen@flash.com"); */
 
         ActionBar actionBar = getActionBar();
         if(actionBar != null){

@@ -42,7 +42,7 @@ public class ContactArrayAdapter extends ArrayAdapter {
 
         //Liaison entre les données et la vue
         TextView nameTextView = view.findViewById(R.id.listTextViewName);
-        nameTextView.setText(contactData.get("name"));
+        nameTextView.setText(contactData.get("name").toUpperCase());
 
         TextView FirstNameTextView = view.findViewById(R.id.listTextViewFirstname);
         FirstNameTextView.setText(contactData.get("firstName"));
