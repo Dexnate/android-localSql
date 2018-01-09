@@ -22,4 +22,5 @@
     <color name="gris_pale">#EEEEC6</color>
     <color name="rose">#FFC0CB</color>
     <color name="fuschia">#FF00FF</color>
+    <color name="colorSelectedItem">#7f1b545e</color>
 </resources>

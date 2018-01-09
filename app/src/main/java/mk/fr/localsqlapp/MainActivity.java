@@ -2,10 +2,14 @@ package mk.fr.localsqlapp;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,10 +18,12 @@ import java.util.Map;
 
 import fr.mk.database.DatabaseHandler;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
   private   ListView contactListView;
   private List<Map<String, String>> contactList;
+  private Integer selectedIndex;
+  private Map<String, String> selectedPerson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +42,14 @@ public class MainActivity extends AppCompatActivity {
 
         //Definition de l'adapter de notre listView
         contactListView.setAdapter(contactAdapter);
+
+        //definition d'un écouteur d'évenement pour onItemclick
+        contactListView.setOnItemClickListener(this);
+
+        DatabaseHandler db = new DatabaseHandler(this);
+
+
+
     }
 
     /**
@@ -73,4 +87,17 @@ public class MainActivity extends AppCompatActivity {
 
         return contactList;
     }
+
+
+
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        this.selectedIndex=position;
+        this.selectedPerson=this.contactList.get(position);
+        Toast.makeText(this, "Contact sélectionné: "+selectedPerson.get("name")+" "+selectedPerson.get("firstName"), Toast.LENGTH_SHORT).show();
+    }
+
+
+
 }
