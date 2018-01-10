@@ -157,16 +157,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         //Suppression uniquement si un contact est sélectionné
         if (this.selectedIndex != null){
             try{
-                //Définition de la requête sql et des paramètres
-                String sql="DELETE FROM contacts WHERE id=?";
-                String [] params = {String.valueOf(this.selectedPerson.getId())};
-                //Execution de la requête
-                DatabaseHandler db = new DatabaseHandler(this);
-                db.getWritableDatabase().execSQL(sql, params);
+               this.dao.deleteOneById(Long.valueOf(this.selectedIndex));
+                //réinitialisation de la liste des contacts
 
-                //réinitiamisation de la liste des contacts
-
-                contactListInit();
+                this.contactListInit();
             }catch (SQLiteException ex){
                 Toast.makeText(this,"Impossible de supprimer", Toast.LENGTH_SHORT).show();
             }

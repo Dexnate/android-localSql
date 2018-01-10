@@ -23,7 +23,7 @@ public class ContactDAO {
 
     //Récuperation d'un contact en fonction de sa clef primaire
 
-    public Contact findOneById(long id)throws SQLiteException {
+    public Contact findOneById(Long id)throws SQLiteException {
 
         //Execution de la requête
         String[] params={String.valueOf(id)};
@@ -57,21 +57,29 @@ public class ContactDAO {
 
     public List<Contact> findAll() throws SQLiteException{
         //Instanciation de la liste des contacts
-    List<Contact> contactList = new ArrayList<>();
+         List<Contact> contactList = new ArrayList<>();
 
-    // Execution de la requête sql
-    String sql = "SELECT id, name, first_name, email FROM contacts";
-    Cursor cursor = this.db.getReadableDatabase().rawQuery(sql, null);
+     // Execution de la requête sql
+        String sql = "SELECT id, name, first_name, email FROM contacts";
+        Cursor cursor = this.db.getReadableDatabase().rawQuery(sql, null);
 
-    //Boucle sur le curseur
-    while(cursor.moveToNext()){
-        contactList.add(this.hydrateContact(cursor));
+     //Boucle sur le curseur
+     while(cursor.moveToNext()){
+            contactList.add(this.hydrateContact(cursor));
+        }
+
+     //fermeture du curseur
+            cursor.close();
+        return contactList;
+
     }
 
-    //fermeture du curseur
-        cursor.close();
-    return contactList;
+//    Suppression d'un contact en fonction de sa clef primaire
+    public void deleteOneById(Long id) throws SQLiteException{
+        String[] params = {id.toString()};
+        String sql = "DELETE FROM contacts WHERE id=?";
+        this.db.getWritableDatabase().execSQL(sql, params);
 
-}
+    }
 
 }
