@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
          contactListInit();
 
-         this.testDao();
+
 
          //récuperation des données persistées dans le bundle onSaveinstanceState
         if(savedInstanceState != null){
@@ -95,33 +95,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         startActivityForResult(formIntent,1);
 
     }
-
-    private List<Map<String, String>> getAllContacts() {
-        //Instanciation de la connexion à la base de données
-        DatabaseHandler db = new DatabaseHandler(this);
-
-        //Execution de la requête de selection
-        Cursor cursor = db.getReadableDatabase().rawQuery("SELECT name, first_name, email, id FROM contacts", null);
-
-        //Instanciation de la liste qui recevra les données
-        List<Map<String, String>> contactList=new ArrayList<>();
-
-
-        //Parcours du curseur
-        while (cursor.moveToNext()){
-            Map<String, String> contactCols = new HashMap<>();
-            contactCols.put("name", cursor.getString(0));
-            contactCols.put("firstName", cursor.getString(1));
-            contactCols.put("email", cursor.getString(2));
-            contactCols.put("id", cursor.getString(3));
-
-            //Ajout du map à la list
-            contactList.add(contactCols);
-        }
-
-        return contactList;
-    }
-
 
 
 
@@ -203,19 +176,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
-    private void testDao(){
-        try {
-            ContactDAO dao = new ContactDAO(new DatabaseHandler(this));
-            Contact contact = dao.findOneById(1);
-            if(contact.getName() == null) {
-                Log.i("DAO", "contact inconnu");
-            }else{
-                Log.i("DAO", contact.getName());
-            }
-        }catch(SQLiteException ex){
-            Log.i("Debug", ex.getMessage());
-        }
-    }
 
     @Override
     protected void onStart() {
