@@ -9,7 +9,7 @@ public class Contact {
     private String name;
     private String firstName;
     private String email;
-    private long id;
+    private Long id;
 
     public Contact() {
     }
@@ -48,11 +48,11 @@ public class Contact {
         return this;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public Contact setId(long id) {
+    public Contact setId(Long id) {
         this.id = id;
         return this;
     }

@@ -157,7 +157,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         //Suppression uniquement si un contact est sélectionné
         if (this.selectedIndex != null){
             try{
-               this.dao.deleteOneById(Long.valueOf(this.selectedIndex));
+                Long id= this.selectedPerson.getId();
+               this.dao.deleteOneById(Long.valueOf(id));
                 //réinitialisation de la liste des contacts
 
                 this.contactListInit();
