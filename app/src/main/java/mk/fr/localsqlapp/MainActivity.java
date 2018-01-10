@@ -27,10 +27,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
   private List<Map<String, String>> contactList;
   private Integer selectedIndex;
   private Map<String, String> selectedPerson;
+  private final String LIFE_CYCLE = "cycle de vie";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        Log.i(LIFE_CYCLE, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -38,6 +40,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
          contactListView = findViewById(R.id.contactListView);
 
          contactListInit();
+
+         //récuperation des données persistées dans le bundle onSaveinstanceState
+        if(savedInstanceState != null){
+            //récupération de l'index de selection sauvegardé
+            this.selectedIndex = savedInstanceState.getInt("selectedIndex");
+            if(this.selectedIndex != null){
+                this.selectedPerson=this.contactList.get(this.selectedIndex);
+                contactListView.requestFocusFromTouch();
+                contactListView.setSelection(this.selectedIndex);
+            }
+        }
 
 
     }
@@ -174,6 +187,41 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.i(LIFE_CYCLE, "onStart");
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(LIFE_CYCLE, "onResume");
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i(LIFE_CYCLE, "onPause");
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i(LIFE_CYCLE, "onStop");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.i(LIFE_CYCLE, "onDestroy");
+    }
+
+    //persistance des données avant la destruction de l'activité
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt("selectedIndex", this.selectedIndex);
+        super.onSaveInstanceState(outState);
+    }
 }
