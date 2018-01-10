@@ -19,15 +19,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fr.mk.database.ContactDAO;
 import fr.mk.database.DatabaseHandler;
+import mk.fr.localsqlapp.model.Contact;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
   private   ListView contactListView;
-  private List<Map<String, String>> contactList;
+  private List<Contact> contactList;
   private Integer selectedIndex;
-  private Map<String, String> selectedPerson;
+  private Contact selectedPerson;
   private final String LIFE_CYCLE = "cycle de vie";
+
+  private DatabaseHandler db;
+  private ContactDAO dao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +44,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         //Reference au widget ListView sur le layout
          contactListView = findViewById(R.id.contactListView);
 
+         this.db = new DatabaseHandler(this);
+         this.dao = new ContactDAO(this.db);
+
          contactListInit();
+
+         this.testDao();
 
          //récuperation des données persistées dans le bundle onSaveinstanceState
         if(savedInstanceState != null){
@@ -52,12 +62,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         }
 
+        //Instanciation de la connexion à la base de données
+        this.db = new DatabaseHandler(this);
+
+        //Instanciation du DAO pour les contacts
+        this.dao = new ContactDAO(this.db);
+
 
     }
 
     private void contactListInit() {
         //Recuperation de la liste des contacts
-        contactList = this.getAllContacts();
+        contactList = this.dao.findAll();
 
         //Création d'un contactArrayAdapter
         ContactArrayAdapter contactAdapter = new ContactArrayAdapter(this, contactList);
@@ -113,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         this.selectedIndex=position;
         this.selectedPerson=this.contactList.get(position);
-        Toast.makeText(this, "Contact sélectionné: "+selectedPerson.get("name")+" "+selectedPerson.get("firstName"), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Contact sélectionné: "+selectedPerson.getName()+" "+selectedPerson.getFirstName(), Toast.LENGTH_SHORT).show();
     }
 
 
@@ -137,10 +153,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                Intent modifyIntent = new Intent(this, FormActivity.class);
                if(this.selectedIndex != null){
                    //Passage des paramètres à l'intention
-                   modifyIntent.putExtra("id",this.selectedPerson.get("id"));
-                   modifyIntent.putExtra("firstName",this.selectedPerson.get("firstName"));
-                   modifyIntent.putExtra("name",this.selectedPerson.get("name"));
-                   modifyIntent.putExtra("email",this.selectedPerson.get("email"));
+                   modifyIntent.putExtra("id",String.valueOf(this.selectedPerson.getId()));
+                   modifyIntent.putExtra("firstName",this.selectedPerson.getFirstName());
+                   modifyIntent.putExtra("name",this.selectedPerson.getName());
+                   modifyIntent.putExtra("email",this.selectedPerson.getEmail());
 
                    //Lancement de l'activité FormActivity
                    startActivityForResult(modifyIntent, 1);
@@ -170,13 +186,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             try{
                 //Définition de la requête sql et des paramètres
                 String sql="DELETE FROM contacts WHERE id=?";
-                String [] params = {this.selectedPerson.get("id")};
+                String [] params = {String.valueOf(this.selectedPerson.getId())};
                 //Execution de la requête
                 DatabaseHandler db = new DatabaseHandler(this);
                 db.getWritableDatabase().execSQL(sql, params);
 
                 //réinitiamisation de la liste des contacts
-                this.contactList = this.getAllContacts();
+
                 contactListInit();
             }catch (SQLiteException ex){
                 Toast.makeText(this,"Impossible de supprimer", Toast.LENGTH_SHORT).show();
@@ -184,6 +200,20 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         }else{
             Toast.makeText(this,"Veuillez selectionner un contact", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void testDao(){
+        try {
+            ContactDAO dao = new ContactDAO(new DatabaseHandler(this));
+            Contact contact = dao.findOneById(1);
+            if(contact.getName() == null) {
+                Log.i("DAO", "contact inconnu");
+            }else{
+                Log.i("DAO", contact.getName());
+            }
+        }catch(SQLiteException ex){
+            Log.i("Debug", ex.getMessage());
         }
     }
 
@@ -221,7 +251,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     //persistance des données avant la destruction de l'activité
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt("selectedIndex", this.selectedIndex);
-        super.onSaveInstanceState(outState);
+        if(this.selectedIndex != null) {
+            outState.putInt("selectedIndex", this.selectedIndex);
+            super.onSaveInstanceState(outState);
+        }
     }
+
 }
